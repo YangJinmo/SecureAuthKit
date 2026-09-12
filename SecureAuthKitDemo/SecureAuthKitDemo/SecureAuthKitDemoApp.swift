@@ -2,10 +2,11 @@ import SwiftUI
 
 @main
 struct SecureAuthKitDemoApp: App {
+    @StateObject private var viewModel = AuthViewModel()
+
     var body: some Scene {
         WindowGroup {
-            Text("SecureAuthKit Demo")
-                .padding()
+            RootView(viewModel: viewModel)
         }
     }
 }

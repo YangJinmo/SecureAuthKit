@@ -7,14 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F48AA972D4840AB15015EBE /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0385309A909FD8BDE8C9B8 /* AuthViewModel.swift */; };
 		3D66F1B6ACF95B6FCDB37DAF /* SecureAuthKitDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 536C18192818DD233762BBE0 /* SecureAuthKitDemoApp.swift */; };
 		6F24217F34128FCD5CC0E2A1 /* SecureAuthKit in Frameworks */ = {isa = PBXBuildFile; productRef = DD8CCDB707FB138CF81187F9 /* SecureAuthKit */; };
+		7650C09AE2EA49AA52E4E00C /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB80E18D7BBC52DA4AA0D764 /* HomeView.swift */; };
+		D286665A529253F3BCCC11E7 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7240176DFFF36235E87D0A4 /* RootView.swift */; };
+		DB3410835A8C14E74E198AC8 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CAF43B72A334CE017336ED2 /* LoginView.swift */; };
+		DB91B7622D90D1D7B5D1FD04 /* BiometricLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2B6E3D3CBE99CBE677F153 /* BiometricLockView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0CAF43B72A334CE017336ED2 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		528692179995BFDD288DA58B /* SecureAuthKitDemo.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = SecureAuthKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52B690624AB3725D2D040AC3 /* implement-secureauthkit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "implement-secureauthkit"; path = ..; sourceTree = SOURCE_ROOT; };
 		536C18192818DD233762BBE0 /* SecureAuthKitDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureAuthKitDemoApp.swift; sourceTree = "<group>"; };
+		5F2B6E3D3CBE99CBE677F153 /* BiometricLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricLockView.swift; sourceTree = "<group>"; };
+		AD0385309A909FD8BDE8C9B8 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		DB80E18D7BBC52DA4AA0D764 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		E7240176DFFF36235E87D0A4 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,12 +64,33 @@
 			);
 			sourceTree = "<group>";
 		};
+		6E915B363B0FD775CE20B054 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5F2B6E3D3CBE99CBE677F153 /* BiometricLockView.swift */,
+				DB80E18D7BBC52DA4AA0D764 /* HomeView.swift */,
+				0CAF43B72A334CE017336ED2 /* LoginView.swift */,
+				E7240176DFFF36235E87D0A4 /* RootView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		AC6A83EADDDCB90678EA4572 /* SecureAuthKitDemo */ = {
 			isa = PBXGroup;
 			children = (
 				536C18192818DD233762BBE0 /* SecureAuthKitDemoApp.swift */,
+				D5FEBE1F73FCA31F93D5EA87 /* ViewModels */,
+				6E915B363B0FD775CE20B054 /* Views */,
 			);
 			path = SecureAuthKitDemo;
+			sourceTree = "<group>";
+		};
+		D5FEBE1F73FCA31F93D5EA87 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				AD0385309A909FD8BDE8C9B8 /* AuthViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -122,6 +153,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F48AA972D4840AB15015EBE /* AuthViewModel.swift in Sources */,
+				DB91B7622D90D1D7B5D1FD04 /* BiometricLockView.swift in Sources */,
+				7650C09AE2EA49AA52E4E00C /* HomeView.swift in Sources */,
+				DB3410835A8C14E74E198AC8 /* LoginView.swift in Sources */,
+				D286665A529253F3BCCC11E7 /* RootView.swift in Sources */,
 				3D66F1B6ACF95B6FCDB37DAF /* SecureAuthKitDemoApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
