@@ -18,6 +18,8 @@ final class FakeAuthProvider: AuthProviding, @unchecked Sendable {
 
 final class FakeTokenStore: TokenStoring, @unchecked Sendable {
     var storedToken: AuthToken?
+    /// When set, `clear()` throws this instead of deleting, simulating a Keychain failure.
+    var clearError: Error?
     private(set) var clearCallCount = 0
 
     func save(_ token: AuthToken) throws {
@@ -29,6 +31,9 @@ final class FakeTokenStore: TokenStoring, @unchecked Sendable {
     }
 
     func clear() throws {
+        if let clearError {
+            throw clearError
+        }
         clearCallCount += 1
         storedToken = nil
     }

@@ -1,3 +1,4 @@
+import Security
 import XCTest
 @testable import SecureAuthKit
 
@@ -18,6 +19,7 @@ final class AuthSessionTests: XCTestCase {
         let firstState = await iterator.next()
 
         XCTAssertEqual(firstState, .lockedBiometric)
+        XCTAssertEqual(session.currentState, .lockedBiometric)
     }
 
     func test_signIn_withValidCredentials_savesTokenAndAuthenticates() async throws {
@@ -85,7 +87,7 @@ final class AuthSessionTests: XCTestCase {
         XCTAssertNil(session.currentToken())
     }
 
-    func test_refreshTokenIfNeeded_withExpiredToken_refreshesAndSaves() async throws {
+    func test_unlockWithBiometrics_withExpiredStoredToken_refreshesAndAuthenticates() async throws {
         let expiredToken = AuthToken(accessToken: "old", refreshToken: "r1", expiresAt: Date().addingTimeInterval(-10), subject: "demo")
         let refreshedToken = AuthToken(accessToken: "new", refreshToken: "r2", expiresAt: Date().addingTimeInterval(60), subject: "demo")
         let authProvider = FakeAuthProvider()
@@ -93,11 +95,47 @@ final class AuthSessionTests: XCTestCase {
         let tokenStore = FakeTokenStore()
         tokenStore.storedToken = expiredToken
         let session = AuthSession(authProvider: authProvider, tokenStore: tokenStore, biometricAuthenticator: FakeBiometricAuthenticator())
+
         try await session.unlockWithBiometrics()
+
+        XCTAssertEqual(session.currentState, .authenticated(refreshedToken))
+        XCTAssertEqual(session.currentToken(), refreshedToken)
+        XCTAssertEqual(tokenStore.storedToken, refreshedToken)
+        XCTAssertEqual(authProvider.refreshCallCount, 1)
+    }
+
+    func test_unlockWithBiometrics_withExpiredStoredTokenAndFailingRefresh_throwsAndLogsOut() async {
+        let expiredToken = AuthToken(accessToken: "old", refreshToken: "r1", expiresAt: Date().addingTimeInterval(-10), subject: "demo")
+        let authProvider = FakeAuthProvider()
+        authProvider.refreshResult = .failure(AuthError.tokenExpired)
+        let tokenStore = FakeTokenStore()
+        tokenStore.storedToken = expiredToken
+        let session = AuthSession(authProvider: authProvider, tokenStore: tokenStore, biometricAuthenticator: FakeBiometricAuthenticator())
+
+        do {
+            try await session.unlockWithBiometrics()
+            XCTFail("Expected unlockWithBiometrics to throw")
+        } catch {
+            XCTAssertEqual(error as? AuthError, .tokenExpired)
+        }
+        XCTAssertEqual(session.currentState, .loggedOut)
+        XCTAssertNil(session.currentToken())
+    }
+
+    func test_refreshTokenIfNeeded_withExpiredToken_refreshesAndSaves() async throws {
+        let expiredToken = AuthToken(accessToken: "old", refreshToken: "r1", expiresAt: Date().addingTimeInterval(-10), subject: "demo")
+        let refreshedToken = AuthToken(accessToken: "new", refreshToken: "r2", expiresAt: Date().addingTimeInterval(60), subject: "demo")
+        let authProvider = FakeAuthProvider()
+        authProvider.loginResult = .success(expiredToken)
+        authProvider.refreshResult = .success(refreshedToken)
+        let tokenStore = FakeTokenStore()
+        let session = AuthSession(authProvider: authProvider, tokenStore: tokenStore, biometricAuthenticator: FakeBiometricAuthenticator())
+        try await session.signIn(username: "demo", password: "password123")
 
         try await session.refreshTokenIfNeeded()
 
         XCTAssertEqual(session.currentToken(), refreshedToken)
+        XCTAssertEqual(tokenStore.storedToken, refreshedToken)
         XCTAssertEqual(authProvider.refreshCallCount, 1)
     }
 
@@ -109,9 +147,30 @@ final class AuthSessionTests: XCTestCase {
         let session = AuthSession(authProvider: authProvider, tokenStore: tokenStore, biometricAuthenticator: FakeBiometricAuthenticator())
         try await session.signIn(username: "demo", password: "password123")
 
-        session.signOut()
+        try session.signOut()
 
         XCTAssertNil(session.currentToken())
+        XCTAssertEqual(session.currentState, .loggedOut)
         XCTAssertEqual(tokenStore.clearCallCount, 1)
+    }
+
+    func test_signOut_whenClearFails_propagatesErrorAndStaysAuthenticated() async throws {
+        let token = AuthToken(accessToken: "a", refreshToken: "r", expiresAt: Date().addingTimeInterval(60), subject: "demo")
+        let authProvider = FakeAuthProvider()
+        authProvider.loginResult = .success(token)
+        let tokenStore = FakeTokenStore()
+        let session = AuthSession(authProvider: authProvider, tokenStore: tokenStore, biometricAuthenticator: FakeBiometricAuthenticator())
+        try await session.signIn(username: "demo", password: "password123")
+        tokenStore.clearError = AuthError.keychainError(errSecInteractionNotAllowed)
+
+        do {
+            try session.signOut()
+            XCTFail("Expected signOut to throw")
+        } catch {
+            XCTAssertEqual(error as? AuthError, .keychainError(errSecInteractionNotAllowed))
+        }
+        XCTAssertEqual(session.currentState, .authenticated(token))
+        XCTAssertEqual(session.currentToken(), token)
+        XCTAssertEqual(tokenStore.storedToken, token)
     }
 }

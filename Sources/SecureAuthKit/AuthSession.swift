@@ -31,6 +31,14 @@ public final class AuthSession {
         self.continuation.yield(initialState)
     }
 
+    deinit {
+        continuation.finish()
+    }
+
+    /// The current state, readable synchronously so UI code can render the right screen on the
+    /// very first frame instead of waiting for `stateStream` to deliver it asynchronously.
+    public var currentState: AuthState { state }
+
     public func signIn(username: String, password: String) async throws {
         let token = try await authProvider.login(username: username, password: password)
         try tokenStore.save(token)
@@ -48,11 +56,28 @@ public final class AuthSession {
         guard try await biometricAuthenticator.authenticate(reason: "Unlock SecureAuthKit Demo") else {
             throw AuthError.biometryFailed
         }
-        setState(.authenticated(token))
+        guard token.isExpired else {
+            setState(.authenticated(token))
+            return
+        }
+        // An expired stored token must not grant access on its own — exchange it for a fresh one
+        // before authenticating, and fall back to `.loggedOut` if that exchange fails.
+        do {
+            let refreshedToken = try await authProvider.refresh(refreshToken: token.refreshToken)
+            try tokenStore.save(refreshedToken)
+            setState(.authenticated(refreshedToken))
+        } catch {
+            setState(.loggedOut)
+            throw error
+        }
     }
 
-    public func signOut() {
-        try? tokenStore.clear()
+    /// Clears the stored credential and logs out.
+    ///
+    /// Throws if the Keychain deletion fails, leaving the state unchanged so the caller can
+    /// retry rather than reporting a sign-out that left the credential on disk.
+    public func signOut() throws {
+        try tokenStore.clear()
         setState(.loggedOut)
     }
 
