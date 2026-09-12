@@ -18,6 +18,13 @@ struct BiometricLockView: View {
                     .font(.footnote)
                     .foregroundStyle(.red)
             }
+            // Escape hatch: without this, a device that can no longer authenticate (biometrics
+            // unenrolled, passcode removed, or locked out) leaves this screen with no way forward.
+            Button("Sign Out") {
+                Task { await viewModel.signOut() }
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.secondary)
         }
         .padding()
         .task {

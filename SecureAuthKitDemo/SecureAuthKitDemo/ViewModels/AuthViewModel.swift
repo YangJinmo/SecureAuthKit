@@ -3,18 +3,25 @@ import SecureAuthKit
 
 @MainActor
 final class AuthViewModel: ObservableObject {
-    @Published private(set) var state: AuthState = .loggedOut
+    @Published private(set) var state: AuthState
     @Published var errorMessage: String?
 
     private let session: AuthSession
     private var observationTask: Task<Void, Never>?
 
     init(session: AuthSession? = nil) {
-        self.session = session ?? AuthSession()
+        let session = session ?? AuthSession()
+        self.session = session
+        // Seed synchronously so a relaunch with a stored token renders the lock screen on the
+        // first frame instead of flashing the login screen until the stream delivers the state.
+        self.state = session.currentState
+
+        // The stream is captured before the task so the task never holds a strong `self`:
+        // `self` is re-checked per iteration and released at every suspension point.
+        let stream = session.stateStream
         observationTask = Task { [weak self] in
-            guard let self else { return }
-            for await newState in self.session.stateStream {
-                self.state = newState
+            for await newState in stream {
+                self?.state = newState
             }
         }
     }
@@ -58,6 +65,11 @@ final class AuthViewModel: ObservableObject {
     }
 
     func signOut() async {
-        session.signOut()
+        do {
+            try session.signOut()
+            errorMessage = nil
+        } catch {
+            errorMessage = (error as? LocalizedError)?.errorDescription ?? "Something went wrong."
+        }
     }
 }
