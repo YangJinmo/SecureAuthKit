@@ -20,6 +20,21 @@ secure token storage, plus a SwiftUI demo app exercising the full flow.
 - OAuth2/OIDC social login
 - App Attest / DeviceCheck device integrity verification
 
+## Security Model & Trade-offs
+
+The stored `AuthToken` is written to the Keychain with accessibility
+`kSecAttrAccessibleWhenUnlockedThisDeviceOnly`, but it is **not** bound to
+biometry — the item carries no `SecAccessControl` / `kSecAttrAccessControl`.
+`BiometricAuthenticator` is therefore an app-level UI gate in front of data the
+Keychain will hand back to this app whenever the device is unlocked, not a gate
+the Keychain itself enforces. Anything that can run as this app (a debugger
+attached to a development build, for instance) can read the token without ever
+passing Face ID. A production SDK would create the item with
+`SecAccessControlCreateWithFlags(nil, kSecAttrAccessibleWhenUnlockedThisDeviceOnly, .biometryCurrentSet, &error)`
+so the Keychain requires a fresh biometric match on every read and invalidates
+the item if the enrolled biometric set changes. That is deliberately omitted
+here to keep the example focused on SDK composition and testability.
+
 See `docs/superpowers/specs/2026-09-12-secureauthkit-design.md` for the full
 design rationale.
 

@@ -102,22 +102,31 @@ Refresh with an unrecognized/expired refresh token throws
 The public facade, composed of the three components above via constructor
 injection (defaults to the real implementations; tests inject fakes).
 ```swift
-public actor AuthSession {
+@MainActor
+public final class AuthSession {
     public init(
         authProvider: AuthProviding = MockAuthProvider(),
         tokenStore: TokenStoring = SecureTokenStore(),
         biometricAuthenticator: BiometricAuthenticating = BiometricAuthenticator()
     )
 
+    public let stateStream: AsyncStream<AuthState>
+
     public func signIn(username: String, password: String) async throws
     public func unlockWithBiometrics() async throws
-    public func signOut() async
-    public func currentToken() async -> AuthToken?
+    public func signOut() throws
+    public func currentToken() -> AuthToken?
     public func refreshTokenIfNeeded() async throws
 
-    public var stateStream: AsyncStream<AuthState> { get }
+    public var currentState: AuthState { get }
 }
 ```
+A `@MainActor` class rather than an `actor`: this facade exists to be driven from
+the UI layer, which is already on the main actor, so isolating it to that same
+actor lets SwiftUI read `stateStream`/`currentState` and call the synchronous
+members directly instead of forcing `await` on every access for no concurrency
+benefit. `signOut()` throws so a failed Keychain deletion surfaces to the caller
+rather than being reported as a successful sign-out.
 
 ### `AuthError`
 ```swift
