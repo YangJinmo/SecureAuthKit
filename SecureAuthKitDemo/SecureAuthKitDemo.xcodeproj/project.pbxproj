@@ -124,6 +124,10 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
+					265D4968C988052F2890C792 = {
+						DevelopmentTeam = B597T9UC49;
+						ProvisioningStyle = Automatic;
+					};
 				};
 			};
 			buildConfigurationList = 9F832F94AFB957B20904F729 /* Build configuration list for PBXProject "SecureAuthKitDemo" */;
@@ -170,7 +174,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B597T9UC49;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "SecureAuthKit Demo uses Face ID to unlock your saved session.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -192,7 +198,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = B597T9UC49;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "SecureAuthKit Demo uses Face ID to unlock your saved session.";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
