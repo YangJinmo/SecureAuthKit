@@ -60,7 +60,14 @@ turned on so the biometric prompts work. Demo credentials: `demo` / `password123
 
 ## Screenshots
 
-See [docs/screenshots/README.md](docs/screenshots/README.md) for a full
-walkthrough of every behavior the demo implements — login, wrong
-credentials, the biometric lock screen, sign out, and step-by-step
-instructions to trigger the Face ID and token-expiry scenarios yourself.
+| Login | Wrong credentials | Signed in |
+|---|---|---|
+| ![Login screen](docs/screenshots/01-login.png) | ![Login failed](docs/screenshots/02-login-failed.png) | ![Home screen](docs/screenshots/03-home.png) |
+
+| Biometric lock (relaunch) | Signed out |
+|---|---|
+| ![Biometric lock screen](docs/screenshots/04-biometric-lock.png) | ![Login screen after sign out](docs/screenshots/05-after-signout.png) |
+
+See [docs/screenshots/README.md](docs/screenshots/README.md) for what each
+screen demonstrates and step-by-step instructions to trigger the Face ID
+and token-expiry scenarios yourself.
