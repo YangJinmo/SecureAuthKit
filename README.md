@@ -57,3 +57,10 @@ open SecureAuthKitDemo.xcodeproj
 
 Build and run on an iOS Simulator with **Features → Face ID → Enrolled**
 turned on so the biometric prompts work. Demo credentials: `demo` / `password123`.
+
+## Screenshots
+
+See [docs/screenshots/README.md](docs/screenshots/README.md) for a full
+walkthrough of every behavior the demo implements — login, wrong
+credentials, the biometric lock screen, sign out, and step-by-step
+instructions to trigger the Face ID and token-expiry scenarios yourself.
